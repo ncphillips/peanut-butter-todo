@@ -17,13 +17,14 @@ export function handler(cb: Callback): NextApiHandler {
     const prisma = new PrismaClient()
     const context = { prisma }
     try {
-      req.body = JSON.parse(req.body)
+      req.body = JSON.parse(req.body || "{}")
 
       const response = await cb(req, res, context)
 
       res.json(serializeDates(response))
-    } catch {
-      res.status(500).json({})
+    } catch (e) {
+      console.error(e)
+      res.status(500).json({ ...e })
     } finally {
       prisma.$disconnect()
     }
