@@ -64,3 +64,13 @@ model VerificationRequest {
 
   @@map(name: "verification_requests")
 }
+
+model Todo {
+  id        Int      @id @default(autoincrement())
+  title     String
+  createdAt DateTime @default(now()) @map(name: "created_at")
+  updatedAt DateTime @default(now()) @map(name: "updated_at")
+  completed Boolean  @default(false)
+
+  @@map(name: "todos")
+}
