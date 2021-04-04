@@ -34,7 +34,7 @@ export default function Todos(props: TodosProps) {
       <ul>
         {!todos.length && <div>There's nothing here.</div>}
         {todos.map((todo, index) => (
-          <li>
+          <li key={index}>
             {todo.title} – {todo.completed && "DONE"}
             <button
               onClick={() => {
@@ -56,19 +56,19 @@ export default function Todos(props: TodosProps) {
   )
 }
 
-export const getServerSideProps = serverSideHandler(async ({ prisma, req }) => {
-  const session = await getSession({ req })
-
-  if (session) {
-    return {
-      redirect: {
-        destination: "/",
-        permanent: false,
-      },
+export const getServerSideProps = serverSideHandler(
+  async ({ userId, prisma }) => {
+    if (!userId) {
+      return {
+        redirect: {
+          destination: "/",
+          permanent: false,
+        },
+      }
     }
+
+    const todos = await prisma.todo.findMany({ where: { userId } })
+
+    return { props: { todos } }
   }
-
-  const todos = await prisma.todo.findMany()
-
-  return { props: { todos } }
-})
+)

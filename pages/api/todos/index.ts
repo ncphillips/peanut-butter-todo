@@ -1,16 +1,20 @@
 import { NextApiHandler } from "next"
 import handler from "next-handler-api"
 
-const todosHandler: NextApiHandler = handler(async (req, _res, { prisma }) => {
-  if (req.method) {
-    const todo = await prisma.todo.create({
-      data: {
-        title: req.body.title,
-      },
-    })
+const todosHandler: NextApiHandler = handler(
+  async (req, _res, { prisma, userId }) => {
+    if (!userId) throw new Error("Not authorized")
+    if (req.method) {
+      const todo = await prisma.todo.create({
+        data: {
+          userId: userId,
+          title: req.body.title,
+        },
+      })
 
-    return todo
+      return todo
+    }
   }
-})
+)
 
 export default todosHandler

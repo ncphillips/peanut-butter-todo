@@ -1,4 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/client"
+import React from "react"
+import Link from "next/link"
 
 export default function HomePage() {
   const [session, loading] = useSession()
@@ -25,6 +27,9 @@ export default function HomePage() {
             </div>
           )}
           <button onClick={() => signOut()}>Sign out</button>
+          <Link href="/todos" passHref>
+            <a>Todo List</a>
+          </Link>
         </>
       )}
     </>

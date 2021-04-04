@@ -1,12 +1,12 @@
 import handler from "next-handler-api"
 
-export default handler(async (req, res, { prisma }) => {
+export default handler(async (req, res, { prisma, userId }) => {
   if (req.method !== "PUT") {
     res.status(404)
     return {}
   }
 
-  let todo = await prisma.todo.findFirst({ where: { id: req.body.id } })
+  let todo = await prisma.todo.findFirst({ where: { id: req.body.id, userId } })
 
   if (!todo) {
     res.status(404)
