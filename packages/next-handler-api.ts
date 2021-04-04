@@ -2,6 +2,7 @@ import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { PrismaClient } from "@prisma/client"
 import { serializeDates } from "next-serialize-dates"
 import { getSession } from "next-auth/client"
+import { NotImplemented } from "next-handler-errors"
 
 export type ApiContext = {
   prisma: PrismaClient
@@ -14,11 +15,22 @@ export type Callback = (
   context: ApiContext
 ) => Promise<any>
 
-export function handler(cb: Callback): NextApiHandler {
+export type Callbacks = {
+  get?: Callback
+  post?: Callback
+  put?: Callback
+  delete?: Callback
+}
+
+export function handler(cbs: Callbacks): NextApiHandler {
   return async (req, res) => {
     const prisma = new PrismaClient()
     const context: ApiContext = { prisma }
     try {
+      //@ts-ignore
+      const cb = cbs[req.method]
+      if (!cb) throw new NotImplemented()
+
       context.userId = await getUserId(req, prisma)
       req.body = JSON.parse(req.body || "{}")
 
