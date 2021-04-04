@@ -26,8 +26,7 @@ export function handler(cb: Callback): NextApiHandler {
 
       res.json(serializeDates(response))
     } catch (e) {
-      console.error(e)
-      res.status(500).json({ ...e })
+      res.status(e.code || 500).json({ ...e })
     } finally {
       prisma.$disconnect()
     }

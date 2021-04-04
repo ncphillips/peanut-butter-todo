@@ -1,17 +1,12 @@
 import handler from "next-handler-api"
+import { NotFoundError, NotImplemented } from "next-handler-errors"
 
 export default handler(async (req, res, { prisma, userId }) => {
-  if (req.method !== "PUT") {
-    res.status(404)
-    return {}
-  }
+  if (req.method !== "PUT") throw new NotImplemented()
 
   let todo = await prisma.todo.findFirst({ where: { id: req.body.id, userId } })
 
-  if (!todo) {
-    res.status(404)
-    return {}
-  }
+  if (!todo) throw new NotFoundError()
 
   const completed = !todo.completed
   const id = ~~req.query.id

@@ -1,19 +1,20 @@
 import { NextApiHandler } from "next"
 import handler from "next-handler-api"
+import { NotImplemented, UnauthorizedError } from "next-handler-errors"
 
 const todosHandler: NextApiHandler = handler(
   async (req, _res, { prisma, userId }) => {
-    if (!userId) throw new Error("Not authorized")
-    if (req.method) {
-      const todo = await prisma.todo.create({
-        data: {
-          userId: userId,
-          title: req.body.title,
-        },
-      })
+    if (!userId) throw new UnauthorizedError()
+    if (req.method !== "POST") throw new NotImplemented()
 
-      return todo
-    }
+    const todo = await prisma.todo.create({
+      data: {
+        userId: userId,
+        title: req.body.title,
+      },
+    })
+
+    return todo
   }
 )
 
