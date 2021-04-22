@@ -1,16 +1,16 @@
-import handler from "next-handler-api"
-import { NotFoundError } from "next-handler-errors"
+import { NotFoundError, api } from "next-handler"
 
-export default handler({
+export default api({
   put: async (req, res, { prisma, userId }) => {
+    const id = ~~req.query.id
+
     let todo = await prisma.todo.findFirst({
-      where: { id: req.body.id, userId },
+      where: { id, userId },
     })
 
     if (!todo) throw new NotFoundError()
 
     const completed = !todo.completed
-    const id = ~~req.query.id
 
     todo = await prisma.todo.update({
       where: { id },

@@ -9,17 +9,17 @@ import serializeDates from "next-serialize-dates"
 import { getSession } from "next-auth/client"
 import { Session } from "next-auth"
 
-export type ServerSideHandlerContext = GetServerSidePropsContext & {
+export type SsrContext = GetServerSidePropsContext & {
   prisma: PrismaClient
   userId?: number
 }
 
-export type ServerSideHandlerCallback<P> = (
-  context: ServerSideHandlerContext
+export type SsrCallback<P> = (
+  context: SsrContext
 ) => Promise<GetServerSidePropsResult<P>>
 
-export function serverSideHandler<P = any, Q extends ParsedUrlQuery = any>(
-  callback: ServerSideHandlerCallback<P>
+export function ssr<P = any, Q extends ParsedUrlQuery = any>(
+  callback: SsrCallback<P>
 ): GetServerSideProps<P, Q> {
   return async (context) => {
     const prisma = new PrismaClient()
@@ -54,4 +54,4 @@ async function getUserId(prisma: PrismaClient, session: Session | null) {
   return prismaSession.userId
 }
 
-export default serverSideHandler
+export default ssr

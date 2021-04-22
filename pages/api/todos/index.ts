@@ -1,8 +1,7 @@
 import { NextApiHandler } from "next"
-import handler from "next-handler-api"
-import { UnauthorizedError } from "next-handler-errors"
+import { UnauthorizedError, api } from "next-handler"
 
-const todosHandler: NextApiHandler = handler({
+const todosHandler: NextApiHandler = api({
   post: async (req, _res, { prisma, userId }) => {
     if (!userId) throw new UnauthorizedError()
 

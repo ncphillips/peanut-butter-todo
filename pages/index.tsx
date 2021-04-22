@@ -1,7 +1,6 @@
 import { signIn, signOut, useSession } from "next-auth/client"
 import React from "react"
 import Link from "next/link"
-import handler from "next-handler-api"
 
 export default function HomePage() {
   const [session, loading] = useSession()
