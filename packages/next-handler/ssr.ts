@@ -5,10 +5,11 @@ import {
   GetServerSidePropsContext,
   GetServerSidePropsResult,
 } from "next"
-import serializeDates from "next-serialize-dates"
 import { getSession } from "next-auth/client"
 import { Session } from "next-auth"
+
 import { getUserId } from "./get-user-id"
+import serializeDates from "./serialize-dates"
 
 export type SsrContext = GetServerSidePropsContext & {
   prisma: PrismaClient
