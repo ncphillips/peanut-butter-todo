@@ -8,6 +8,7 @@ import {
 import serializeDates from "next-serialize-dates"
 import { getSession } from "next-auth/client"
 import { Session } from "next-auth"
+import { getUserId } from "./get-user-id"
 
 export type SsrContext = GetServerSidePropsContext & {
   prisma: PrismaClient
@@ -40,18 +41,6 @@ export function ssr<P = any, Q extends ParsedUrlQuery = any>(
 
     return serializeDates({ ...result, props: { ...result.props, session } })
   }
-}
-
-async function getUserId(prisma: PrismaClient, session: Session | null) {
-  if (!session) return
-
-  const prismaSession = await prisma.session.findFirst({
-    where: { accessToken: session.accessToken },
-  })
-
-  if (!prismaSession) return
-
-  return prismaSession.userId
 }
 
 export default ssr

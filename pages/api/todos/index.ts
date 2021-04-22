@@ -2,7 +2,7 @@ import { NextApiHandler } from "next"
 import { UnauthorizedError, api } from "next-handler"
 
 const todosHandler: NextApiHandler = api({
-  post: async (req, _res, { prisma, userId }) => {
+  post: async ({ req, prisma, userId }) => {
     if (!userId) throw new UnauthorizedError()
 
     const todo = await prisma.todo.create({

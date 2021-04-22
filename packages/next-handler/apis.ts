@@ -1,19 +1,19 @@
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next"
 import { PrismaClient } from "@prisma/client"
 import { serializeDates } from "next-serialize-dates"
+import { Session } from "next-auth"
 import { getSession } from "next-auth/client"
 import { NotImplemented } from "./errors"
+import { getUserId } from "./get-user-id"
 
 export type ApiContext = {
+  req: NextApiRequest
+  res: NextApiResponse
   prisma: PrismaClient
   userId?: number
 }
 
-export type ApiCallback = (
-  req: NextApiRequest,
-  res: NextApiResponse,
-  context: ApiContext
-) => Promise<any>
+export type ApiCallback = (context: ApiContext) => Promise<any>
 
 export type ApiCallbacks = {
   get?: ApiCallback
@@ -25,13 +25,15 @@ export type ApiCallbacks = {
 export function api(cbs: ApiCallbacks): NextApiHandler {
   return async (req, res) => {
     const prisma = new PrismaClient()
-    const context: ApiContext = { prisma }
+    const context: ApiContext = { prisma, req, res }
+    let session: Session | null = null
     try {
       //@ts-ignore
       const cb = cbs[req.method]
       if (!cb) throw new NotImplemented()
 
-      context.userId = await getUserId(req, prisma)
+      session = await getSession({ req })
+      context.userId = await getUserId(prisma, session)
       req.body = JSON.parse(req.body || "{}")
 
       const response = await cb(req, res, context)
@@ -43,18 +45,4 @@ export function api(cbs: ApiCallbacks): NextApiHandler {
       prisma.$disconnect()
     }
   }
-}
-
-async function getUserId(req: NextApiRequest, prisma: PrismaClient) {
-  const session = await getSession({ req })
-
-  if (!session) return
-
-  const prismaSession = await prisma.session.findFirst({
-    where: { accessToken: session.accessToken },
-  })
-
-  if (!prismaSession) return
-
-  return prismaSession.userId
 }

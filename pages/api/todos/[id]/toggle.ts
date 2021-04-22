@@ -1,7 +1,7 @@
 import { NotFoundError, api } from "next-handler"
 
 export default api({
-  put: async (req, res, { prisma, userId }) => {
+  put: async ({ req, prisma, userId }) => {
     const id = ~~req.query.id
 
     let todo = await prisma.todo.findFirst({
