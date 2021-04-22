@@ -1,6 +1,5 @@
 import { Todo } from "@prisma/client"
-import { getSession } from "next-auth/client"
-import serverSideHandler from "next-handler-server-side"
+import { ssr } from "next-handler"
 import { useRef, useState } from "react"
 
 type TodosProps = {
@@ -56,19 +55,17 @@ export default function Todos(props: TodosProps) {
   )
 }
 
-export const getServerSideProps = serverSideHandler(
-  async ({ userId, prisma }) => {
-    if (!userId) {
-      return {
-        redirect: {
-          destination: "/",
-          permanent: false,
-        },
-      }
+export const getServerSideProps = ssr(async ({ userId, prisma }) => {
+  if (!userId) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
     }
-
-    const todos = await prisma.todo.findMany({ where: { userId } })
-
-    return { props: { todos } }
   }
-)
+
+  const todos = await prisma.todo.findMany({ where: { userId } })
+
+  return { props: { todos } }
+})
