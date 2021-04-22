@@ -30,17 +30,18 @@ export function api(cbs: ApiCallbacks): NextApiHandler {
     let session: Session | null = null
     try {
       //@ts-ignore
-      const cb = cbs[req.method]
+      const cb = cbs[req.method?.toLowerCase()]
       if (!cb) throw new NotImplemented()
 
       session = await getSession({ req })
       context.userId = await getUserId(prisma, session)
       req.body = JSON.parse(req.body || "{}")
 
-      const response = await cb(req, res, context)
+      const response = await cb(context)
 
       res.json(serializeDates(response))
     } catch (e) {
+      console.error(e)
       res.status(e.code || 500).json({ ...e })
     } finally {
       prisma.$disconnect()
